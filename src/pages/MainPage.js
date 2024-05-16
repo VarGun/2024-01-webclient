@@ -38,8 +38,8 @@ const SideWrapper = styled.div`
 `;
 
 const MainPage = () => {
-  const [cookies, setCookies, removeCookie] = useCookies(["auth_token"]); // 쿠키 훅
-  const navigate = useNavigate(); // 대여중 및 대여신청 버튼 클릭시 이동하기 위함
+  // const [cookies, setCookies, removeCookie] = useCookies(["auth_token"]); // 쿠키 훅
+  // const navigate = useNavigate(); // 대여중 및 대여신청 버튼 클릭시 이동하기 위함
 
   const [rightSide, setRightSide] = useState("UserMain");
   const [cancelTrigger, setCancleTrigger] = useState(false);
@@ -57,6 +57,10 @@ const MainPage = () => {
   const [selectedItemId, setSelectedItemId] = useState(0);
   const [selectedItem, setSelectedItem] = useState({}); // 관리(수정) 처리하려는 아이템 - 물품
   const [selectedRequest, setSelectedRequest] = useState({}); // 대여, 반납 신청 처리하려는 아이템 - 요청
+
+  useEffect(() => {
+    console.log("MainPage rentalList : ", rentalList);
+  }, [rentalList]);
 
   return (
     <MainPageContainer>

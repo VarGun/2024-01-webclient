@@ -104,7 +104,10 @@ const UserRental = ({
     const res = await itemAPI.getItem(itemId);
     return res.data.product_name;
   };
-
+  const getItemInfo = async (itemId) => {
+    const res = await itemAPI.getItem(itemId);
+    return res.data;
+  };
   const fetchRentalList = async () => {
     const cookie = cookies.auth_token;
     const res = await rentalAPI.getUserRentalList(cookie);
@@ -112,7 +115,9 @@ const UserRental = ({
 
     const updatedRentalList = await Promise.all(
       rentalData.map(async (item) => {
-        const goodsName = await getItemName(item.item);
+        const goodsInfo = await getItemInfo(item.item);
+        const goodsName = goodsInfo.product_name;
+        const isExpandable = goodsInfo.type;
 
         let rentalState;
         if (item.approved === null) {
@@ -120,6 +125,10 @@ const UserRental = ({
         } else if (item.approved !== null && item.returned === null) {
           rentalState = 1;
         } else if (item.returned !== null) {
+          rentalState = 3;
+        }
+
+        if (isExpandable === "expandable") {
           rentalState = 3;
         }
         return {

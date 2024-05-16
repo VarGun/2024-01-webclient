@@ -61,37 +61,6 @@ const UserRentalList = styled.div`
   overflow-y: auto;
 `;
 
-const UserRentalItem = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 44px 28px;
-  box-sizing: border-box;
-  border-bottom: 1px solid #d8d8d8;
-`;
-
-const UserRentalImg = styled.img`
-  width: 60px;
-  height: 60px;
-`;
-
-const UserRentalInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-`;
-const RentalItemName = styled.span`
-  font-size: 20px;
-`;
-
-const RentalItemQuantity = styled.span`
-  font-size: 12px;
-  color: #9c9c9c;
-`;
-
 const UserSub = ({ rentalList, setRentalList, rightSide, cancelTrigger }) => {
   const [cookies, setCookies, removeCookie] = useCookies(["auth_token"]); // 쿠키 훅
   const handleRentalList = (list) => {
@@ -113,6 +82,11 @@ const UserSub = ({ rentalList, setRentalList, rightSide, cancelTrigger }) => {
     return res.data.product_name;
   };
 
+  const getItemInfo = async (itemId) => {
+    const res = await itemAPI.getItem(itemId);
+    return res.data;
+  };
+
   const fetchRentalList = async () => {
     const cookie = cookies.auth_token;
     const res = await rentalAPI.getUserRentalList(cookie);
@@ -120,7 +94,9 @@ const UserSub = ({ rentalList, setRentalList, rightSide, cancelTrigger }) => {
 
     const updatedRentalList = await Promise.all(
       rentalData.map(async (item) => {
-        const goodsName = await getItemName(item.item);
+        const goodsInfo = await getItemInfo(item.item);
+        const goodsName = goodsInfo.product_name;
+        const isExpandable = goodsInfo.type;
 
         let rentalState;
         if (item.approved === null) {
@@ -130,6 +106,10 @@ const UserSub = ({ rentalList, setRentalList, rightSide, cancelTrigger }) => {
         } else if (item.returned !== null) {
           rentalState = 3;
         }
+        if (isExpandable === "expandable") {
+          rentalState = 3;
+        }
+
         return {
           ...item,
           rentalState: rentalState,

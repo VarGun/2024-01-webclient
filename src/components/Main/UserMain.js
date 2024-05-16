@@ -83,9 +83,10 @@ const UserMain = ({
   }, []);
 
   const updateItemListState = (allItems, userRentalList) => {
+    console.log("updateItemListState 실행");
     const updatedItems = allItems.map((item) => {
       const reversedRentalList = [...userRentalList].reverse();
-
+      console.log("item : ", item);
       const rentalInfo = reversedRentalList.find(
         (rental) => rental.item === item._id,
       );
@@ -93,7 +94,8 @@ const UserMain = ({
       let rentalId;
       if (
         !rentalInfo ||
-        (rentalInfo.approved !== null && rentalInfo.returned !== null)
+        (rentalInfo.approved !== null && rentalInfo.returned !== null) ||
+        item.type === "expandable"
       ) {
         state = 0; // 대응하는 rental 정보가 없거나, approved와 returned가 모두 null이 아닌 경우
         rentalId = "";
@@ -115,6 +117,7 @@ const UserMain = ({
   };
 
   const fetchAndUpdateItems = async () => {
+    console.log("fetchAndUpdateItems 실행");
     const cookie = cookies.auth_token;
     const allItemsResponse = await itemAPI.getAllItemList();
     const allItems = allItemsResponse.data;
@@ -178,7 +181,7 @@ const UserMain = ({
     }
   };
 
-  const stateList = ["대여하기", "신청취소", "반납하기", "재고없음"];
+  const stateList = ["대여하기", "신청취소", "대여중", "재고 없음"];
 
   const rentalClick = () => {
     setRightSide("UserRental");
@@ -256,13 +259,6 @@ const UserMain = ({
               cancel={item.state === 1}
               disabled={item.state === 3}
               onClick={() => handleRentalClick(item)}
-
-              // onClick={() => {
-              //   if (item.state === 0) {
-              // btnClick(item.state);
-
-              // }
-              // onClick={() => handleRentalClick(item)}
             />
           </UserRentalItem>
         ))}
